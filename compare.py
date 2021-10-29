@@ -70,23 +70,31 @@ def find_gene(variants, gene_file):
 	variants["CDS(Orientation)"] = v_gene
 	return variants
 
+def main(arguments):
+
+    """
+    go through each dir, process vcf file and generate csv file 
+    """
+    folder_list = glob.glob(f"{arguments.f}/*/")
+    for d in folder_list:
+        print("Processing d...")
+        # get vcf file 
+        try:
+            vcf = glob.glob(f"{d}/*.vcf")[0]
+        except:
+            raise 
+
+        f = load(vcf)
+        final = find_gene(f, arguments.c)
+
+        output_file = vcf.replace(".vcf", "_analyzed.csv")
+        final.to_csv(os.path.join(d, output_file))
+    print("Done!")
+
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('--p', type=str, help='Parental')
+	parser = argparse.ArgumentParser(description='Process MGY output files')
 	parser.add_argument('--c', type=str, help='CDS')
 	parser.add_argument('--f', type=str, help='Input vcf file')
 
 	args = parser.parse_args()
-	#parental = args.p
-	vcf = args.f
-	cds = args.c
-
-	# load vcf
-	#par = load(parental)
-	f = load(vcf)
-
-	#final = compare(par, f)
-	final = find_gene(f, cds)
-
-	filename = vcf.split("/")[-1].split(".")[0]+"_analyzed.csv"
-	final.to_csv("./csv_files2021/"+filename)
+        main(args)
