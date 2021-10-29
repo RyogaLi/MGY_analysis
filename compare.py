@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import argparse
+import glob
+import os
 # compare two vcf file and output the diff
 
 def load(f):
@@ -32,8 +34,8 @@ def compare(f1, f2):
 			#print list(pa)
 			#print list(pa["ALT"])
 			if any(i in list(pa["ALT"])[0].split(",") for i in row["ALT"].split(",")):
-			    pa = pa["./output/tao3_parental_1/tao3_parental_1_sorted.bam"]
-			    parental.append(str(list(pa)[0]))
+				pa = pa["./output/tao3_parental_1/tao3_parental_1_sorted.bam"]
+				parental.append(str(list(pa)[0]))
 			else:
 		#	    print list(pa["ALT"])[0].split(",")
 			    #print row["ALT"].split(",")
@@ -44,6 +46,7 @@ def compare(f1, f2):
 		# if variant in f1, parental.append(parental col)
 	f2["parental"] = parental
 	return f2
+
 
 def find_gene(variants, gene_file):
 	genes = pd.read_table(gene_file, sep="\t")
@@ -70,31 +73,34 @@ def find_gene(variants, gene_file):
 	variants["CDS(Orientation)"] = v_gene
 	return variants
 
+
 def main(arguments):
 
-    """
-    go through each dir, process vcf file and generate csv file 
-    """
-    folder_list = glob.glob(f"{arguments.f}/*/")
-    for d in folder_list:
-        print("Processing d...")
-        # get vcf file 
-        try:
-            vcf = glob.glob(f"{d}/*.vcf")[0]
-        except:
-            raise FileNotFoundError("{d} - vcf file not found")
+	"""
+	go through each dir, process vcf file and generate csv file
+	"""
+	folder_list = glob.glob(f"{arguments.f}/*/")
+	for d in folder_list:
+		print("Processing d...")
+		# get vcf file
+		try:
+			vcf = glob.glob(f"{d}/*.vcf")[0]
+		except:
+			raise FileNotFoundError("{d} - vcf file not found")
 
-        f = load(vcf)
-        final = find_gene(f, arguments.c)
+		f = load(vcf)
+		final = find_gene(f, arguments.c)
 
-        output_file = vcf.replace(".vcf", "_analyzed.csv")
-        final.to_csv(os.path.join(d, output_file))
-    print("Done!")
+		output_file = vcf.replace(".vcf", "_analyzed.csv")
+		final.to_csv(os.path.join(d, output_file))
+	print("Done!")
+
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Process MGY output files')
-	parser.add_argument('--c', type=str, help='CDS')
+
+	parser = argparse.ArgumentParser(description='Process some integers.')
+	parser.add_argument('--c', type=str, help='CDS (/home/rothlab/rli/02_dev/mgy_pipeline/cds.txt)')
 	parser.add_argument('--f', type=str, help='Input vcf file')
 
 	args = parser.parse_args()
-        main(args)
+	main(args)
