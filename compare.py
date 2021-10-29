@@ -82,7 +82,7 @@ def main(arguments):
         try:
             vcf = glob.glob(f"{d}/*.vcf")[0]
         except:
-            raise 
+            raise FileNotFoundError("{d} - vcf file not found")
 
         f = load(vcf)
         final = find_gene(f, arguments.c)
