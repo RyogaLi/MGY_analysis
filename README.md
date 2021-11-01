@@ -16,10 +16,10 @@ optional arguments:
   --ploidy PLOIDY  Ploidity (default set to 1)
 ```
 
-1. Run the alignment and variant call (submit jobs to slurm). Plo
+1. Run the alignment and variant call (submit jobs to slurm). Command example:
 `python main.py --fastq path/to/fastq --output path/to/output --ref path/to/ref`
 
-2. Run the analysis script for individual vcf file (no jobs submitted)
+2. Run the analysis script for individual vcf file (no jobs submitted, takes around 1-2hrs)
 ```
 usage: compare.py [-h] [--p P] [--c C] [--f F]
 
@@ -30,5 +30,5 @@ optional arguments:
   --c C       CDS
   --f F       Input vcf file
 ```
-
+Example
 `python compare.py --c path/to/cds.txt --f output/from/main`
